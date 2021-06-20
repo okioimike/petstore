@@ -1,8 +1,22 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import Http404
+
+from .models import Pet
+
 
 def home(request):
-    return HttpResponse('<p><h3>This is the Home View</h3></p>')
+    pets = Pet.objects.all()
+    return render(request, 'home.html', {
+        'pets':pets,})
 
-def pet_detail(request,pet_id):
-    return HttpResponse(f'<p>Pet detail view with {pet_id} as id</p>')
+
+def pet_detail(request, pet_id):
+    try:
+        pet = Pet.objects.get(id=pet_id)
+
+    except Pet.DoesNotExist:
+        raise Http404('Pet Not Found')
+
+    return render(request, 'pet_detail.html', {
+        'pet': pet
+    })
